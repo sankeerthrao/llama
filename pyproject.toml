@@ -1,0 +1,95 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "llama-inference"
+version = "2.0.0"
+description = "High-performance inference engine for LLaMA models with OpenAI-compatible API"
+readme = "README.md"
+license = {text = "Llama 2 Community License Agreement"}
+requires-python = ">=3.9"
+authors = [
+    {name = "Meta Platforms, Inc."},
+]
+keywords = ["llama", "llm", "inference", "transformers", "ai"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "torch>=2.0.0",
+    "fairscale>=0.4.13",
+    "fire",
+    "sentencepiece",
+]
+
+[project.optional-dependencies]
+server = [
+    "fastapi>=0.104.0",
+    "uvicorn[standard]>=0.24.0",
+    "pydantic>=2.0.0",
+    "sse-starlette>=1.6.0",
+    "prometheus-client>=0.19.0",
+]
+quantization = [
+    "bitsandbytes>=0.41.0",
+]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "pytest-asyncio>=0.21.0",
+    "httpx>=0.25.0",
+    "ruff>=0.1.0",
+    "mypy>=1.7.0",
+    "pre-commit>=3.5.0",
+]
+all = ["llama-inference[server,quantization,dev]"]
+
+[project.scripts]
+llama-serve = "llama.server.app:main"
+llama-bench = "llama.benchmarks.runner:main"
+
+[project.urls]
+Homepage = "https://github.com/sankeerthrao/llama"
+Repository = "https://github.com/sankeerthrao/llama"
+
+[tool.setuptools.packages.find]
+include = ["llama*"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP", "B", "SIM"]
+ignore = ["E501"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["llama"]
+
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+check_untyped_defs = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "gpu: marks tests that require GPU",
+    "integration: marks integration tests",
+]
